@@ -1,6 +1,6 @@
 {
   "name": "postcat",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "main": "out/app/electron-main/main.js",
   "description": "A lightweight, extensible API tool",
   "homepage": "https://github.com/cssdms/postcat.git",
@@ -80,13 +80,13 @@
     "yaml": "2.2.1"
   },
   "devDependencies": {
-    "api-donkey": "1.0.5",
     "@commitlint/cli": "~17.5.1",
     "@commitlint/config-conventional": "~17.4.4",
     "@playwright/test": "1.32.1",
     "@types/node": "18.15.11",
     "@typescript-eslint/eslint-plugin": "5.57.1",
     "@typescript-eslint/parser": "5.57.1",
+    "api-donkey": "1.0.5",
     "electron": "22.1.0",
     "electron-builder": "23.6.0",
     "electron-notarize": "1.2.1",

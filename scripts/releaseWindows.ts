@@ -10,7 +10,7 @@ const octokit = new Octokit({
 });
 
 const commonInfo = {
-  owner: 'Postcatlab',
+  owner: 'cssdms',
   repo: 'postcat'
 };
 
