@@ -162,3 +162,45 @@ yarn add @angular/cli --global
 | 命令      | 描述         |
 | --------- | ------------ |
 | yarn test | 执行单元测试 |
+
+### 常见问题
+
+#### 1. 打包时签名问题，需要修改文件：patches/windowsCodeSign.js 中的参数
+
+#### 2. 若需要签名，需要在windows10中通过powershell命令生成
+
+```powershell
+
+#
+# 用于创建postcat项目的windows10 的签名证书文件
+#
+
+# 创建自签名证书（有效期 5 年）
+$cert = New-SelfSignedCertificate `
+  -Subject "OID.1.3.6.1.4.1.311.60.2.1.3=CN, OID.2.5.4.15=Private Organization" `
+  -Type CodeSigningCert `
+  -KeyUsage DigitalSignature `
+  -KeyAlgorithm RSA `
+  -KeyLength 2048 `
+  -NotAfter (Get-Date).AddYears(5) `
+  -CertStoreLocation Cert:\CurrentUser\My
+
+# 验证证书是否生成成功
+Get-ChildItem Cert:\CurrentUser\My\$($cert.Thumbprint)
+
+
+#  导出为 PFX 文件
+# 设置 PFX 密码
+$password = ConvertTo-SecureString -String "wqkj123" -Force -AsPlainText
+
+# 导出 PFX（包含私钥）
+Export-PfxCertificate `
+  -Cert "Cert:\CurrentUser\My\$($cert.Thumbprint)" `
+  -FilePath "postcat.pfx" `
+  -Password $password
+
+
+
+# 查找本机的签名证书  名字：  OID.1.3.6.1.4.1.311.60.2.1.3=CN, OID.2.5.4.15=Private Organization
+ Get-ChildItem -Recurse Cert: -CodeSigningCert | Select-Object -Property Subject,PSParentPath,Thumbprint | ConvertTo-Json -Compress
+```

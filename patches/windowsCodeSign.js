@@ -73,6 +73,8 @@ async function getCertificateFromStoreInfo(options, vm) {
   const certificateSha1 = options.certificateSha1 ? options.certificateSha1.toUpperCase() : options.certificateSha1;
   // ExcludeProperty doesn't work, so, we cannot exclude RawData, it is ok
   // powershell can return object if the only item
+  // 生成认证信息:如果计算机上没有签名证书，则从证书存储中获取，
+  // 需要自行生成签名信息：使用 PowerShell 生成自签名证书并导出为 PFX
   const rawResult = await vm.exec('powershell.exe', [
     '-NoProfile',
     '-NonInteractive',
@@ -81,6 +83,7 @@ async function getCertificateFromStoreInfo(options, vm) {
   ]);
   const certList = rawResult.length === 0 ? [] : util_1.asArray(JSON.parse(rawResult));
   for (const certInfo of certList) {
+    console.log('证书信息：', certInfo);
     if (
       (certificateSubjectName != null && !certInfo.Subject.includes(certificateSubjectName)) ||
       (certificateSha1 != null && certInfo.Thumbprint.toUpperCase() !== certificateSha1)
@@ -109,6 +112,7 @@ async function doSign(configuration, packager) {
   // unify logic of signtool path location
   const toolInfo = await getToolPath();
   const tool = toolInfo.path;
+  console.log('签名工具位置：', tool);
   // decide runtime argument by cases
   let args;
   let env = process.env;
@@ -148,9 +152,9 @@ function computeSignToolArgs(options, isWin, vm = new vm_1.VmManager()) {
   if (!isWin) {
     options.resultOutputPath = outputPath;
   }
-  // const args = isWin ? ['sign'] : ['-in', inputFile, '-out', outputPath];
-  const args = isWin ? ['-pin', 'MUQHWNFG', 'sign'] : ['-in', inputFile, '-out', outputPath];
-
+  // 看情况选择，win10 选第一个
+  const args = isWin ? ['sign'] : ['-in', inputFile, '-out', outputPath];
+  //const args = isWin ? ['-pin', 'MUQHWNFG', 'sign'] : ['-in', inputFile, '-out', outputPath];
   // if (process.env.ELECTRON_BUILDER_OFFLINE !== 'true') {
   //   const timestampingServiceUrl = options.options.timeStampServer || 'http://timestamp.digicert.com';
   //   if (isWin) {
@@ -235,8 +239,9 @@ function getWinSignTool(vendorPath) {
     return path.join(vendorPath, 'windows-6', 'signtool.exe');
   } else {
     //----- eolink start ----
-    return 'D:\\smartcardtools\\x64\\ScSignTool.exe';
-    // return path.join(vendorPath, "windows-10", process.arch, "signtool.exe");
+    //return 'D:\\smartcardtools\\x64\\ScSignTool.exe';
+    //看情况修改，windows10操作系统上启用
+    return path.join(vendorPath, 'windows-10', process.arch, 'signtool.exe');
     //----- eolink end -----
   }
 }

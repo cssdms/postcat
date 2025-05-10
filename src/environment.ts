@@ -1,5 +1,6 @@
 const variables = {
-  GITHUB_ORANIZATION_NAME: 'postcatlab',
+  //GITHUB_ORANIZATION_NAME: 'postcatlab',
+  GITHUB_ORANIZATION_NAME: 'cssdms',
   GITHUB_PROJECT_NAME: 'postcat'
 };
 export const COMMON_APP_CONFIG = {
